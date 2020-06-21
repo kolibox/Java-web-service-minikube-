@@ -1,0 +1,19 @@
+Первый запуск
+kubectl.exe apply -f .\deployment.yaml
+
+Добавить реплики
+kubectl scale deployment.v1.apps/onefactor --replicas=10
+
+Обновление образа
+kubectl set image deployment/onefactor java-spring=kolibomber/java-spring:1.4 --record=true 
+//minReadySeconds  Вот эта опция отвечвает за плавное обновление. По умолчанию == 0. Странно
+
+Итория обновлений
+kubectl rollout history deployment.v1.apps/onefactor
+
+Откатиться назад:
+kubectl rollout undo deployment.v1.apps/onefactor
+kubectl rollout undo deployment.v1.apps/onefactor --to-revision=2
+
+Статус обновления:
+kubectl rollout status deployment.v1.apps/onefactor

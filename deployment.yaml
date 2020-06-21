@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: onefactor
+  name: onefactor
+spec:
+  replicas: 3
+  minReadySeconds: 20
+  selector:
+    matchLabels:
+      app: onefactor
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: onefactor
+    spec:
+      containers:
+      - image: kolibomber/java-spring:1.4
+        name: java-spring
+        resources: {}
+status: {}
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: onefactor
+  name: onefactor
+spec:
+  ports:
+  - name: 8080-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: onefactor
+  type: ClusterIP # Для него надо сделать ingress
+#  type: NodePort # Тестовый режим
+status:
+  loadBalancer: {}
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+   name: ingress-service
+   annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+   rules:
+      - http:
+           paths:
+              - path: /
+                backend:
+                   serviceName: onefactor
+                   servicePort: 8080
+              - path: /test/
+                backend:
+                   serviceName: onefactor
+                   servicePort: 8080
